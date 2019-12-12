@@ -1,6 +1,9 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
+import ru.skillbranch.kotlinexample.User.Factory.fullNameToPair
+import ru.skillbranch.kotlinexample.extentions.getAsPhoneNumber
+import ru.skillbranch.kotlinexample.extentions.isPhoneNumber
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 import java.math.BigInteger
@@ -27,7 +30,7 @@ class User private constructor (
 
     private var phone: String? = null
         set(value) {
-            field = value?.replace("[^+\\d]".toRegex(), "")
+            field = value?.getAsPhoneNumber()
         }
 
     // backing private field
@@ -76,6 +79,24 @@ class User private constructor (
         sendAccessCodeToUser(phone!!, code)
     }
 
+    // for csv
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        rawPhone: String?,
+        passwordHash: String?,
+        salt: String?
+    ): this(firstName, lastName, email=email, rawPhone = rawPhone, meta = mapOf("src" to "csv"))
+    {
+        println("Secondary csv constructor was called")
+        if (!rawPhone.isNullOrBlank() && rawPhone.isPhoneNumber())
+            accessCode = generateAccessCode()
+        if (!passwordHash.isNullOrBlank())
+            this.passwordHash = salt.plus(passwordHash)
+    }
+
+
 
     init {
         println("First init block, primary constructor was called")
@@ -98,14 +119,18 @@ class User private constructor (
             """.trimIndent()
     }
 
-    fun checkPassword(pass: String) = encrypt(pass) == passwordHash
+    fun checkPassword(pass: String) = accessCode == pass || encrypt(pass) == passwordHash
 
     fun changePassword(oldPass: String, newPass: String) {
         if (checkPassword(oldPass)) passwordHash = encrypt(newPass)
         else throw IllegalArgumentException("The entered password does not match the current password")
     }
 
-    private fun encrypt(password: String): String = salt.plus(password).md5()
+    fun renewAccessCode() {
+        accessCode = generateAccessCode().also { code ->
+            sendAccessCodeToUser(phone!!, code)
+        }
+    }
 
     private fun generateAccessCode(): String {
         val possible = "ABCDEFGHIKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz0123456789"
@@ -118,6 +143,8 @@ class User private constructor (
             }
         }.toString()
     }
+
+    private fun encrypt(password: String): String = salt.plus(password).md5()
 
     private fun sendAccessCodeToUser(phone: String, code: String) {
         println("..... sending access code: $code on $phone")
@@ -136,7 +163,7 @@ class User private constructor (
             email: String? = null,
             password: String? = null,
             phone: String? = null
-        ):User{
+        ): User {
             val (firstName, lastName) = fullName.fullNameToPair()
             return when {
                 !phone.isNullOrBlank() -> User(firstName, lastName, phone)
@@ -147,15 +174,48 @@ class User private constructor (
             }
         }
 
+        fun makeUserFromCsvString(csvString: String): User {
+
+            val paramList = csvString.split(";")
+            val (firstName, lastName) = paramList[0].fullNameToPair()
+            val email = paramList[1]
+            val (salt, hash) = paramList[2].saltHashToPair()
+            val phone = paramList[3]
+
+            if (hash == null)
+                throw IllegalArgumentException("user password hash is null")
+
+            return User(firstName, lastName, email, phone, salt, hash)
+        }
+
         private fun String.fullNameToPair(): Pair<String, String?> {
             return this.split(" ")
                 .filter { it.isNotBlank() }
                 .run {
-                    when(size) {
+                    when (size) {
                         1 -> first() to null
                         2 -> first() to last()
-                        else -> throw IllegalArgumentException("FullName must contain only first name " +
-                                " and last name, current split result ${this@fullNameToPair}")
+                        else -> throw IllegalArgumentException(
+                            "FullName must contain only first name " +
+                                    " and last name, current split result ${this@fullNameToPair}"
+                        )
+                    }
+
+                }
+
+        }
+
+        private fun String.saltHashToPair(): Pair<String, String?> {
+            return this.split(":")
+                .filter { it.isNotBlank() }
+                .run {
+                    when (size) {
+                        1 -> first() to null
+                        2 -> first() to last()
+                        else -> throw IllegalArgumentException(
+                            "password hash and salt field must contain only first name " +
+                                    " and last name, current split result ${this@saltHashToPair}"
+                        )
                     }
 
                 }

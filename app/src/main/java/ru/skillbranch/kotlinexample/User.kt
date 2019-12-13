@@ -41,7 +41,24 @@ class User private constructor (
         }
         get() = _login!!
 
-    private val salt: String by lazy {
+
+    private var _salt: String? = null
+
+    private var salt: String
+        set(value) {
+            _salt = value
+        }
+        get() {
+            if (_salt == null)
+                _salt = ByteArray(16).also {
+                    SecureRandom().nextBytes(it)
+                }.toString()
+
+            return _salt!!
+        }
+
+    private val saltOld: String by lazy {
+
         ByteArray(16).also {
             SecureRandom().nextBytes(it)
         }.toString()
@@ -85,15 +102,17 @@ class User private constructor (
         lastName: String?,
         email: String?,
         rawPhone: String?,
-        passwordHash: String?,
-        salt: String?
+        salt: String?,
+        passwordHash: String?
     ): this(firstName, lastName, email=email, rawPhone = rawPhone, meta = mapOf("src" to "csv"))
     {
         println("Secondary csv constructor was called")
         if (!rawPhone.isNullOrBlank() && rawPhone.isPhoneNumber())
             accessCode = generateAccessCode()
+        if (!salt.isNullOrBlank())
+            this.salt = salt
         if (!passwordHash.isNullOrBlank())
-            this.passwordHash = salt.plus(passwordHash)
+            this.passwordHash = passwordHash
     }
 
 

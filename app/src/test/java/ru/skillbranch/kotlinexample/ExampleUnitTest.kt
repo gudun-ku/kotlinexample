@@ -1,6 +1,7 @@
 package ru.skillbranch.kotlinexample
 
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import ru.skillbranch.kotlinexample.extentions.dropLastUntil
 
@@ -10,6 +11,12 @@ import ru.skillbranch.kotlinexample.extentions.dropLastUntil
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
+    @Before
+    fun prepareForTests() {
+        UserHolder.clear()
+    }
+
     @Test
     fun register_user_success() {
         val holder = UserHolder

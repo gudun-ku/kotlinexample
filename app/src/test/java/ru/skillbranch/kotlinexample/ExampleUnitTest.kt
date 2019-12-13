@@ -1,7 +1,7 @@
 package ru.skillbranch.kotlinexample
 
+import org.junit.After
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import ru.skillbranch.kotlinexample.extensions.dropLastUntil
 
@@ -12,10 +12,6 @@ import ru.skillbranch.kotlinexample.extensions.dropLastUntil
  */
 class ExampleUnitTest {
 
-    @Before
-    fun prepareForTests() {
-        UserHolder.clear()
-    }
 
     @Test
     fun register_user_success() {
@@ -195,5 +191,10 @@ class ExampleUnitTest {
             .dropLastUntil{ it == "of" }
         val housesExpected = listOf("House", "Nymeros", "Martell")
         Assert.assertEquals(housesExpected, housesActual)
+    }
+
+    @After
+    fun after(){
+        UserHolder.clearHolder()
     }
 }

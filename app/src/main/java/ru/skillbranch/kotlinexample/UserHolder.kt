@@ -1,12 +1,15 @@
 package ru.skillbranch.kotlinexample
 
+import androidx.annotation.VisibleForTesting
 import ru.skillbranch.kotlinexample.extensions.getAsPhoneNumber
 import ru.skillbranch.kotlinexample.extensions.isPhoneNumber
 
 object UserHolder {
     private val map = mutableMapOf<String, User>()
 
-    fun clear() {
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    fun clearHolder(){
         map.clear()
     }
 

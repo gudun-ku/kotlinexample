@@ -112,6 +112,7 @@ class User private constructor (
             this.salt = salt
         if (!passwordHash.isNullOrBlank())
             this.passwordHash = passwordHash
+        phone = rawPhone?.getAsPhoneNumber()
     }
 
 

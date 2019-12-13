@@ -2,6 +2,7 @@ package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
 import ru.skillbranch.kotlinexample.extensions.getAsPhoneNumber
+import ru.skillbranch.kotlinexample.extensions.getEmptyAsNull
 import ru.skillbranch.kotlinexample.extensions.isPhoneNumber
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
@@ -104,7 +105,7 @@ class User private constructor (
         rawPhone: String?,
         salt: String?,
         passwordHash: String?
-    ): this(firstName, lastName, email=email, rawPhone = rawPhone, meta = mapOf("src" to "csv"))
+    ): this(firstName, lastName, email=email, rawPhone=rawPhone, meta = mapOf("src" to "csv"))
     {
         println("Secondary csv constructor was called")
         if (!rawPhone.isNullOrBlank() && rawPhone.isPhoneNumber())
@@ -113,6 +114,7 @@ class User private constructor (
             this.salt = salt
         if (!passwordHash.isNullOrBlank())
             this.passwordHash = passwordHash
+
     }
 
 
@@ -197,9 +199,9 @@ class User private constructor (
 
             val paramList = csvString.split(";")
             val (firstName, lastName) = paramList[0].fullNameToPair()
-            val email = paramList[1]
+            val email = paramList[1].getEmptyAsNull()
             val (salt, hash) = paramList[2].saltHashToPair()
-            val phone = paramList[3]
+            val phone = paramList[3].getEmptyAsNull()
 
             if (hash == null)
                 throw IllegalArgumentException("user password hash is null")

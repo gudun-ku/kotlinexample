@@ -2,11 +2,16 @@ package ru.skillbranch.kotlinexample.extensions
 
 import ru.skillbranch.kotlinexample.Constants
 
-fun String.getAsPhoneNumber():String? {
-    return if (trim().isNullOrEmpty())
-      null
+
+fun String.getEmptyAsNull(): String? {
+    return if(trim().isNullOrEmpty())
+        null
     else
-      replace("[^+\\d]".toRegex(), "")
+        this
+}
+
+fun String.getAsPhoneNumber():String? {
+    return getEmptyAsNull()?.replace("[^+\\d]".toRegex(), "")
 }
 
 fun String.isPhoneNumber():Boolean {

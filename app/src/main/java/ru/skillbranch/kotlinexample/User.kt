@@ -30,6 +30,7 @@ class User private constructor (
     private var phone: String? = null
         set(value) {
             field = value?.getAsPhoneNumber()
+            println(field)
         }
 
     // backing private field
@@ -112,7 +113,6 @@ class User private constructor (
             this.salt = salt
         if (!passwordHash.isNullOrBlank())
             this.passwordHash = passwordHash
-        phone = rawPhone?.getAsPhoneNumber()
     }
 
 

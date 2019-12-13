@@ -3,7 +3,7 @@ package ru.skillbranch.kotlinexample
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import ru.skillbranch.kotlinexample.extentions.dropLastUntil
+import ru.skillbranch.kotlinexample.extensions.dropLastUntil
 
 /**
  * Example local unit test, which will execute on the development machine (host).

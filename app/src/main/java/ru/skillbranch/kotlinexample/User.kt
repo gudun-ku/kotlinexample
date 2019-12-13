@@ -1,9 +1,8 @@
 package ru.skillbranch.kotlinexample
 
 import androidx.annotation.VisibleForTesting
-import ru.skillbranch.kotlinexample.User.Factory.fullNameToPair
-import ru.skillbranch.kotlinexample.extentions.getAsPhoneNumber
-import ru.skillbranch.kotlinexample.extentions.isPhoneNumber
+import ru.skillbranch.kotlinexample.extensions.getAsPhoneNumber
+import ru.skillbranch.kotlinexample.extensions.isPhoneNumber
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 import java.math.BigInteger

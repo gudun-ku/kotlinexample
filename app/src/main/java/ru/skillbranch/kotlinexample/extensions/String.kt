@@ -1,4 +1,4 @@
-package ru.skillbranch.kotlinexample.extentions
+package ru.skillbranch.kotlinexample.extensions
 
 import ru.skillbranch.kotlinexample.Constants
 

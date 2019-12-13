@@ -1,7 +1,7 @@
 package ru.skillbranch.kotlinexample
 
-import ru.skillbranch.kotlinexample.extentions.getAsPhoneNumber
-import ru.skillbranch.kotlinexample.extentions.isPhoneNumber
+import ru.skillbranch.kotlinexample.extensions.getAsPhoneNumber
+import ru.skillbranch.kotlinexample.extensions.isPhoneNumber
 
 object UserHolder {
     private val map = mutableMapOf<String, User>()
